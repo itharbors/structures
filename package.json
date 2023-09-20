@@ -1,6 +1,6 @@
 {
     "name": "@itharbors/structures",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "",
     "main": "./dist/index.js",
     "module": "./bundle/index.mjs",
@@ -11,7 +11,7 @@
     },
     "author": "VisualSJ",
     "publishConfig": {
-      "access": "public"
+        "access": "public"
     },
     "license": "ISC",
     "devDependencies": {
@@ -20,6 +20,7 @@
         "@types/mocha": "^10.0.1",
         "@types/node": "^20.6.0",
         "esbuild": "^0.15.13",
-        "mocha": "^10.2.0"
+        "mocha": "^10.2.0",
+        "typescript": "^5.2.2"
     }
 }
