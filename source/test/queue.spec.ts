@@ -2,7 +2,7 @@
 
 import { equal } from 'assert';
 
-async function step(name: keyof typeof import('../queue')) {
+async function step(name: keyof typeof import('../lib/queue')) {
     const queue = await import('../index');
     const Ctor = queue[name];
 

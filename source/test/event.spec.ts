@@ -2,7 +2,7 @@
 
 import { equal } from 'assert';
 
-import { EventEmitter } from '../event';
+import { EventEmitter } from '../lib/event';
 
 describe(`EventEmitter`, function () {
     const emitter = new EventEmitter<{

@@ -2,7 +2,7 @@
 
 import { equal } from 'assert';
 
-import { ObjectRecycler } from '../object-recycler';
+import { ObjectRecycler } from '../lib/object-recycler';
 
 describe(`ObjectRecycler`, function () {
 
