@@ -1,5 +1,5 @@
 'use strict';
 
-export * from './queue';
-export * from './object-recycler';
-export * from './event';
+export * from './lib/queue';
+export * from './lib/object-recycler';
+export * from './lib/event';
