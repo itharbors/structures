@@ -2,7 +2,7 @@
 
 import { equal } from 'assert';
 
-import { TaskManager, Task } from '../lib/task';
+import { TaskManager, Task } from '../lib/task-queue';
 
 describe(`TaskManager`, function () {
 

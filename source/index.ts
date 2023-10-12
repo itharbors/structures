@@ -1,6 +1,12 @@
 'use strict';
 
+// 队列
 export * from './lib/queue';
-export * from './lib/object-recycler';
+// 事件
 export * from './lib/event';
-export * from './lib/task';
+// 任务队列
+export * from './lib/task-queue';
+// 对象回收器
+export * from './lib/object-recycler';
+// 任务调度器
+export * from './lib/task-scheduler';

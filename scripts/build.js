@@ -6,7 +6,7 @@ const exec = async function () {
     await spawnAsync('tsc');
     await spawnAsync(
         'esbuild',
-        './source/index.js',
+        './source/index.ts',
         '--outfile=./build/index.mjs',
         '--bundle',
         '--format=esm',
