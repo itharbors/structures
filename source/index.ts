@@ -10,5 +10,5 @@ export * from './lib/task-queue';
 export * from './lib/object-recycler';
 // 任务调度器
 export * from './lib/task-scheduler';
-// 撤销队列
-export * from './lib/undo-queue';
+// Action 队列
+export * from './lib/action-queue';
