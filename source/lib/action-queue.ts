@@ -4,7 +4,7 @@
  * Action 抽象类
  * 用于执行一个既定动作
  */
-export abstract class Action<Detail = { [key: string]: any }> {
+export abstract class Action<Detail = { [key: string]: any }, ExecParams = any> {
     target?: Action;
     detail: Detail;
     constructor(detail: Detail, action?: Action) {
@@ -14,7 +14,7 @@ export abstract class Action<Detail = { [key: string]: any }> {
     /**
      * 执行这个动作
      */
-    abstract exec(): void;
+    abstract exec(params: ExecParams): void;
     /**
      * 生成一个反向动作
      */
@@ -24,12 +24,12 @@ export abstract class Action<Detail = { [key: string]: any }> {
 /**
  * 多个 Action 合并成一个 List
  */
-export class ActionList extends Action<{
+export class ActionList<Params = any> extends Action<{
     queue: Action[];
-}> {
-    async exec() {
+}, Params> {
+    async exec(params: Params) {
         for (let action of this.detail.queue) {
-            await action.exec();
+            await action.exec(params);
         }
     }
     revertAction(): ActionList {
@@ -44,17 +44,58 @@ export class ActionList extends Action<{
     }
 }
 
+enum ActionQueueState {
+    normal,
+    record,
+}
+
 /**
  * Action 队列
  */
-export class ActionQueue {
+export class ActionQueue<D> {
 
-    private redoOffset = 0;
+    private _redoOffset = 0;
+    // action 队列
+    private _queue: Action[] = [];
 
-    public queue: Action[] = [];
+    private _state: ActionQueueState = ActionQueueState.normal;
+    private _recordActionList: Action[] = [];
+
+    get queue() {
+        return this._queue;
+    }
 
     get length() {
-        return this.queue.length;
+        return this._queue.length;
+    }
+
+    public _params: D;
+
+    constructor(params: D) {
+        this._params = params;
+    }
+
+    /**
+     * 开始记录 action 队列
+     */
+    startRecording() {
+        if (this._state === ActionQueueState.record) {
+            this.stopRecording();
+        }
+        this._state = ActionQueueState.record;
+    }
+
+    /**
+     * 结束记录 action 队列，将之前记录的动作全部插入到一个动作里
+     */
+    stopRecording() {
+        if (this._recordActionList.length > 0) {
+            this._queue.push(new ActionList({
+                queue: this._recordActionList,
+            }));
+            this._recordActionList = [];
+        }
+        this._state = ActionQueueState.normal;
     }
 
     /**
@@ -62,20 +103,27 @@ export class ActionQueue {
      * @param action 
      */
     async exec(action: Action) {
-        this.queue.push(action);
-        this.redoOffset = 0;
-        await action.exec();
+        if (this._state === ActionQueueState.record) {
+            this._recordActionList.push(action);
+        } else {
+            this._queue.push(action);
+        }
+        this._redoOffset = 0;
+        await action.exec(this._params);
     }
 
     /**
      * 执行一次撤销
      */
     async undo() {
+        if (this._state === ActionQueueState.record) {
+            this.stopRecording();
+        }
         const setter = new Set();
         let undoAction: Action | undefined;
 
-        for (let i = this.queue.length - 1; i >= 0; i--) {
-            const action = this.queue[i];
+        for (let i = this._queue.length - 1; i >= 0; i--) {
+            const action = this._queue[i];
             if (action.target) {
                 setter.add(action.target);
             } else if (!setter.has(action)) {
@@ -85,24 +133,35 @@ export class ActionQueue {
         }
 
         if (undoAction) {
-            const redoAction = undoAction.target || undoAction.revertAction();
-            this.queue.push(redoAction);
-            redoAction.exec();
+            let redoAction = undoAction.target;
+            if (!redoAction) {
+                redoAction = undoAction.revertAction();
+                redoAction.target = undoAction;
+            }
+            this._queue.push(redoAction);
+            redoAction.exec(this._params);
         }
 
-        this.redoOffset = 0;
+        this._redoOffset = 0;
     }
 
     /**
      * 执行一次重做
      */
     async redo() {
-        const action = this.queue[this.queue.length - 1 - this.redoOffset];
+        if (this._state === ActionQueueState.record) {
+            this.stopRecording();
+        }
+        const action = this._queue[this._queue.length - 1 - this._redoOffset];
         if (action && action.target) {
-            const execAction = action.target || action.revertAction();
-            this.queue.push(execAction);
-            execAction.exec();
-            this.redoOffset += 2;
+            let execAction = action.target;
+            if (!execAction) {
+                execAction = action.revertAction();
+                execAction.target = action;
+            }
+            this._queue.push(execAction);
+            execAction.exec(this._params);
+            this._redoOffset += 2;
         }
     }
 }

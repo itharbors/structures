@@ -10,15 +10,15 @@ describe(`UndoQueue`, function () {
         it('基础信息', () => {
             const execArray: string[] = [];
             class TestAction extends Action {
-                exec() {
+                exec(params: any) {
                     execArray.push(this.detail.id);
                 }
                 revertAction(): TestAction {
                     const uid = this.detail.id + '\'';
-                    return this.target || new TestAction({ id: uid, }, this);
+                    return this.target || new TestAction({ id: uid, });
                 }
             }
-            const manager = new ActionQueue();
+            const manager = new ActionQueue({});
             equal(manager.length, 0);
             manager.exec(new TestAction({ id: `a`, }));
             equal(manager.length, 1);
@@ -102,15 +102,15 @@ describe(`UndoQueue`, function () {
             it(`${JSON.stringify(item.source)} -> ${item.action + ''} -> ${JSON.stringify(item.result)}`, () => {
                 const execArray: string[] = [];
                 class TestAction extends Action {
-                    exec() {
+                    exec(params: any) {
                         execArray.push(this.detail.id);
                     }
                     revertAction(): TestAction {
                         const uid = this.detail.id + '\'';
-                        return this.target || new TestAction({ id: uid, }, this);
+                        return this.target || new TestAction({ id: uid, });
                     }
                 }
-                const manager = new ActionQueue();
+                const manager = new ActionQueue({});
                 item.source.forEach((id) => {
                     manager.exec(new TestAction({ id, }));
                 });
@@ -171,15 +171,15 @@ describe(`UndoQueue`, function () {
             it(`${JSON.stringify(item.source)} -> ${item.action + ''} -> ${JSON.stringify(item.result)}`, async () => {
                 const execArray: string[] = [];
                 class TestAction extends Action {
-                    exec() {
+                    exec(params: any) {
                         execArray.push(this.detail.id);
                     }
                     revertAction(): TestAction {
                         const uid = this.detail.id + '\'';
-                        return this.target || new TestAction({ id: uid, }, this);
+                        return this.target || new TestAction({ id: uid, });
                     }
                 }
-                const manager = new ActionQueue();
+                const manager = new ActionQueue({});
                 for (let IDList of item.source) {
                     const action = new ActionList({
                         queue: IDList.map(id => new TestAction({ id, })),
