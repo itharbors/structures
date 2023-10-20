@@ -8,6 +8,10 @@ on:
       - opened
       - synchronize
       - ready_for_review
+    paths:
+      - 'source/**.ts'
+      - 'source/scripts/*.js'
+      - '.github/workfows/ci.yaml'
 
 permissions:
   contents: read
