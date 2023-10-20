@@ -2,6 +2,9 @@
 
 常用数据结构和小工具
 
+[![NPM](https://img.shields.io/npm/v/@itharbors/structures)](https://www.npmjs.com/package/@itharbors/structures)
+[![CI Status](https://github.com/itharbors/structures/actions/workflows/ci.yml/badge.svg)](https://github.com/itharbors/structures/actions/workflows/ci.yml)
+
 ## 对象列表
 
 - event
