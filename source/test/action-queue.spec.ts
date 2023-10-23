@@ -4,7 +4,7 @@ import { equal, deepEqual } from 'assert';
 
 import { ActionQueue, Action, ActionList } from '../lib/action-queue';
 
-describe(`UndoQueue`, function () {
+describe(`ActionQueue`, function () {
 
     describe('base', () => {
         it('基础信息', () => {

@@ -7,31 +7,11 @@
 
 ## 对象列表
 
-- event
-- object-recycler
-- queue
-- task-scheduler
-- task-queue
-- undo-queue
-
-## undo-queue
-
-一个通用的 UNDO 队列管理工具。满足：
-
-1. 队列只增不减
-2. 数据驱动
-3. 能够自生成反向操作
-
-例如：
-
-a->b->c 三个操作后，执行 undo，队列变为 a->b->c->c'，这时候继续 undo，队列变为 a->b->c->c'->b'。
-
-这之后就有两个分支，一个是执行了新的操作，另一个是执行了重做。
-
-我们先看执行了新的操作的情况：
-
-a->b->c->c'->b'->d 等效于 a->d
-
-再看执行了重做的情况:
-
-a->b->c->c'->b'->b'' 等效于 a->b
+| 对象 | 说明
+|-------|-------
+| event             | 事件相关的封装
+| object-recycler   | 对象回收池
+| queue             | 常用数据结构：队列
+| task-scheduler    | 任务调度器，依赖任务自动触发、任务还原后自动还原关联任务
+| task-queue        | 并行任务管理器，通过 promise 并行执行多个异步任务，并管理对应任务
+| action-queue      | Action 队列管理工具
