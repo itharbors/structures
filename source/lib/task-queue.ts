@@ -64,10 +64,15 @@ export class TaskManager extends EventEmitter<TaskEvents> {
         }
         const task = this.pendingQueue.shift();
         if (!task) {
+            this.emit('finish');
             return;
         }
         this.executingQueue.add(task);
-        await task.handle();
+        try {
+            await task.handle();
+        } catch(error) {
+            this.emit('error', error);
+        }
         this.executingQueue.delete(task);
         this.completedQueue.push(task);
         if (this.executingQueue.size < this.options.maxConcurrent) {
@@ -79,6 +84,10 @@ export class TaskManager extends EventEmitter<TaskEvents> {
      * 开始执行任务队列
      */
     start() {
+        if (this.state === TaskManagerState.normal) {
+            return;
+        }
+        this.emit('start');
         this.state = TaskManagerState.normal;
         for (let i = 0; i < this.options.maxConcurrent; i++) {
             this.step();
@@ -89,6 +98,10 @@ export class TaskManager extends EventEmitter<TaskEvents> {
      * 暂停后续任务
      */
     pause() {
+        if (this.state === TaskManagerState.pause) {
+            return;
+        }
+        this.emit('pause');
         this.state = TaskManagerState.pause;
     }
 
@@ -96,8 +109,14 @@ export class TaskManager extends EventEmitter<TaskEvents> {
      * 重新开始暂停的队列
      */
     resume() {
+        if (this.state !== TaskManagerState.pause) {
+            return;
+        }
+        this.emit('resume');
         this.state = TaskManagerState.normal;
-        this.start();
+        for (let i = 0; i < this.options.maxConcurrent; i++) {
+            this.step();
+        }
     }
 
     /**
@@ -156,7 +175,9 @@ type TaskEvents = {
         result: void;
     };
     error: {
-        params: [];
+        params: [
+            any,
+        ];
         result: void;
     };
 }
