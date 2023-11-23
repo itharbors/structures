@@ -1,4 +1,9 @@
 # 使用 .gitignore 中的规则排除不需要包含在 npm 包中的文件
+.github
+.eslintrc.js
+.eslintignore
+.prettierrc.js
+tsconfig.json
 /source
 /test
 /script

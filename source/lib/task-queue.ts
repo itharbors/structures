@@ -64,7 +64,9 @@ export class TaskManager extends EventEmitter<TaskEvents> {
         }
         const task = this.pendingQueue.shift();
         if (!task) {
-            this.emit('finish');
+            if (this.executingQueue.size === 0) {
+                this.emit('finish');
+            }
             return;
         }
         this.executingQueue.add(task);
